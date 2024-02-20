@@ -4,6 +4,7 @@ WHERE p.MEMBER_ID = r.MEMBER_ID
     AND p.MEMBER_ID = (SELECT MEMBER_ID
                         FROM REST_REVIEW
                         GROUP BY MEMBER_ID
-                        ORDER BY COUNT(*) DESC
+                        ORDER BY COUNT(REVIEW_ID) DESC
                         LIMIT 1)
 ORDER BY REVIEW_DATE, REVIEW_TEXT;
+
