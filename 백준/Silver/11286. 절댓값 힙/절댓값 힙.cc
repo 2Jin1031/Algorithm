@@ -1,23 +1,25 @@
 #include <string>
 #include <vector>
+#include <cstring>
 #include <iostream>
 #include <algorithm>
-#include <cstdio>
+#include <functional>
+#include <queue>
+#include <cmath>
 #include <deque>
 #include <stack>
-#include <queue>
 
 using namespace std;
-
 struct compare {
-    bool operator() (int o1, int o2) {
-        int first_abs = abs(o1);
-        int second_abs = abs(o2);
-        if (first_abs == second_abs) {
-            return o1 > o2;
+    bool operator()(int i, int j) {
+        int first = abs(i);
+        int second = abs(j);
+
+        if (first == second) {
+            return i > j;
         }
         else {
-            return first_abs > second_abs;
+            return first > second;
         }
     }
 };
@@ -25,22 +27,23 @@ struct compare {
 int main(void) {
     int N; scanf("%d", &N);
 
-    priority_queue<int, vector<int>, compare> myQueue;
-
-    int num;
+    priority_queue<int, vector<int>, compare> pq;
+    int now;
     for (int i = 0; i < N; i++) {
-        scanf("%d", &num);
-        if (num == 0) {
-            if (myQueue.empty()) {
-                cout << "0\n";
+        scanf("%d", &now);
+
+        if (now == 0) {
+            if (pq.size()) {
+                printf("%d\n", pq.top());
+                pq.pop();
             }
             else {
-                cout << myQueue.top() << "\n";
-                myQueue.pop();
+                printf("0\n");
             }
         }
         else {
-            myQueue.push(num);
+            pq.push(now);
         }
+
     }
 }
