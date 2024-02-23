@@ -1,51 +1,54 @@
 #include <string>
 #include <vector>
+#include <cstring>
 #include <iostream>
 #include <algorithm>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
+#include <functional>
+#include <queue>
+#include <cmath>
 #include <deque>
 #include <stack>
 
 using namespace std;
 
-typedef pair<int, int> Node;
-
 int main(void) {
-    int n; scanf("%d", &n);
-    vector<int> A(n);
-    for (int i = 0; i < n; i++) {
-        cin >> A[i];
+    int N; scanf("%d", &N);
+    vector<int> A = vector<int> (N);
+    vector<char> D;
+    for (int i = 0; i < N; i++) {
+        scanf("%d", &A[i]);
     }
-    vector<int> C(n);
-    stack<int> myStack;
-    vector<char> R;
-    int flag = 0; // 마지막 도달 flag
-    int num = 1;
-    for (int i = 0; i < n; i++) {
-        int su = A[i];
-        if (su >= num) {
-            if (su == n) flag = 1;
-            while (su >= num) {
-                myStack.push(num++);
-                R.push_back('+');
+
+    stack<int> S;
+
+    S.push(1);
+    D.push_back('+');
+    int now = 2;
+    int i = 0;
+    while (i < N) {
+        if (!S.size() || S.top() < A[i]) {
+            while (!S.size() || S.top() < A[i]) {
+                S.push(now);
+                D.push_back('+');
+                now++;
             }
-            myStack.pop();
-            R.push_back('-');
-        }
-        else if (myStack.top() == su) {
-            myStack.pop();
-            R.push_back('-');
+            S.pop();
+            D.push_back('-');
         }
         else {
-            printf("NO");
-            return 0;
+            if (S.top() == A[i]) {
+                S.pop();
+                D.push_back('-');
+            }
+            else {
+                printf("NO");
+                return 0;
+            }
         }
-    }
-    for (int i = 0; i < R.size(); i++) {
-        printf("%c\n", R[i]);
+        i++;
     }
 
-    return 0;
+    for (int i = 0; i < D.size(); i++) {
+        printf("%c\n", D[i]);
+    }
 }
