@@ -1,34 +1,40 @@
 #include <string>
 #include <vector>
+#include <cstring>
 #include <iostream>
 #include <algorithm>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
+#include <functional>
+#include <queue>
+#include <cmath>
 #include <deque>
 
 using namespace std;
 
+static vector<int> A;
 typedef pair<int, int> Node;
 
+int compare(int i, int j) {
+
+}
 int main(void) {
     int N, L; scanf("%d %d", &N, &L);
-    deque<Node> mydeque;
 
-    // Input
-    vector<int> D(N);
+    A = vector<int>(N);
+    deque<Node> myDeque;
+    
+    int now;
     for (int i = 0; i < N; i++) {
-        int now; scanf("%d", &now);
+        scanf("%d", &now);
 
-        while(mydeque.size() && mydeque.back().first > now) {
-            mydeque.pop_back();
+        while (myDeque.size() && myDeque.back().first > now) {
+            myDeque.pop_back();
         }
-        mydeque.push_back(Node(now, i));
+        myDeque.push_back(Node(now, i));
 
-        if (mydeque.front().second <= i - L) {
-            mydeque.pop_front();
+        if (myDeque.front().second <= i - L) {
+            myDeque.pop_front();
         }
 
-        printf("%d ", mydeque.front().first);
+        printf("%d ", myDeque.front().first);
     }
 }
