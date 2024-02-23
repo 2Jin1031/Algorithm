@@ -1,8 +1,11 @@
 #include <string>
 #include <vector>
+#include <cstring>
 #include <iostream>
 #include <algorithm>
-#include <cstdio>
+#include <functional>
+#include <queue>
+#include <cmath>
 #include <deque>
 #include <stack>
 
@@ -10,21 +13,18 @@ using namespace std;
 
 int main(void) {
     int N; scanf("%d", &N);
-    deque<int> myDeque(N);
-
-    
+    queue<int> A;
     for (int i = 0; i < N; i++) {
-        myDeque[i] = i + 1;
+        A.push(i + 1);
     }
 
     while (1) {
-        if (myDeque.size() == 1) {
-            printf("%d", myDeque.front());
-            return 0;
+        if (A.size() == 1) {
+            break;
         }
-        myDeque.pop_front();
-        int tmp = myDeque.front();
-        myDeque.pop_front();
-        myDeque.push_back(tmp);
+        A.pop();
+        A.push(A.front());
+        A.pop();
     }
+    printf("%d", A.front());
 }
