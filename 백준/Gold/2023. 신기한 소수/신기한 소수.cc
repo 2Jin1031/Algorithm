@@ -2,41 +2,48 @@
 #include <vector>
 #include <cstring>
 #include <iostream>
+#include <algorithm>
+#include <functional>
+#include <queue>
+#include <cmath>
+#include <deque>
+#include <stack>
 
 using namespace std;
-
-void DFS(int num, int ja);
-bool isPrime(int num);
+static vector<vector<int> > A;
+static vector<bool> visited;
 static int N;
-void DFS(int v);
+void DFS(int v, int count);
+bool isPrime(int num);
 
 int main(void) {
-    cin >> N;
+    scanf("%d", &N);
 
     DFS(2, 1);
     DFS(3, 1);
     DFS(5, 1);
     DFS(7, 1);
+    
 }
 
-void DFS(int num, int ja) {
-    if (ja == N) {
-        if (isPrime(num)) cout << num << "\n";
+void DFS(int v, int count) {
+    if (!isPrime(v)) {
+        return ;
+    }
+
+    if (count == N) {
+        printf("%d\n", v);
         return ;
     }
 
     for (int i = 1; i < 10; i++) {
-        if (i % 2 == 0) {
-            continue;
-        }
-        if (isPrime(num * 10 + i)) {
-            DFS(num * 10 + i, ja + 1);
-        }
+        DFS(v * 10 + i, count + 1);
     }
+
 }
 
 bool isPrime(int num) {
-    for (int i = 2; i <= num / 2; i++) {
+    for (int i = 2; i < num / 2; i++) {
         if (num % i == 0) {
             return false;
         }
