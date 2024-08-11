@@ -3,37 +3,29 @@ import java.util.*;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int N = Integer.parseInt(br.readLine());
         Stack<Character> stack = new Stack<>();
-
-        String str;
-        int cnt = 0;
+        int count = 0;
+        
         for (int k = 0; k < N; k++) {
-
-            str = br.readLine();
+            String inputString = br.readLine();
             stack.clear();
-            for (int i = 0; i < str.length(); i++) {
-
-                if (stack.isEmpty()) {
-                    stack.push(str.charAt(i));
+            
+            for (char ch : inputString.toCharArray()) {
+                if (!stack.isEmpty() && stack.peek() == ch) {
+                    stack.pop();
                 }
                 else {
-                    if (stack.peek() == str.charAt(i)) {
-                        stack.pop();
-                    }
-                    else {
-                        stack.push(str.charAt(i));
-                    }
+                    stack.push(ch);
                 }
             }
 
             if (stack.isEmpty()) {
-                cnt++;
+                count++;
             }
         }
 
-        System.out.println(cnt);
+        System.out.println(count);
     }
 }
