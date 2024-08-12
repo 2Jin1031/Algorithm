@@ -4,11 +4,11 @@ import java.util.*;
 import static java.lang.Math.max;
 
 public class Main {
-    static int[] dx = {0, 0, 1, -1};
-    static int[] dy = {1, -1, 0, 0};
+    private static final int[] DX = {0, 0, 1, -1};
+    private static final int[] DY = {1, -1, 0, 0};
 
-    static int N;
-    static int M;
+    private static int N;
+    private static int M;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -35,39 +35,30 @@ public class Main {
             for (int j = 1; j < M + 1; j++) {
                 cnt[0] = 0;
                 if (arr[i][j]) {
-                    maxCnt = max(maxCnt, DFS(i, j, arr, cnt));
+                    maxCnt = max(maxCnt, DFS(i, j, arr));
                 }
             }
         }
 
         bw.write(maxCnt + "\n");
-
-
         bw.flush();
         bw.close();
         br.close();
     }
 
-    private static int DFS(int x, int y, boolean[][] arr, int[] cnt) {
-
-        cnt[0]++;
+    private static int DFS(int x, int y, boolean[][] arr) {
+        int count = 1;
         arr[x][y] = false;
 
         for (int i = 0; i < 4; i++) {
-            for (int j =  0; j < 4; j++) {
-                int nx = x + dx[i];
-                int ny = y + dy[i];
+            int nx = x + DX[i];
+            int ny = y + DY[i];
 
-                if (nx < 1 || nx > N || ny < 1 || ny > M) {
-                    continue;
-                }
-
-                if (arr[nx][ny]) {
-                    DFS(nx, ny, arr, cnt);
-                }
+            if (nx >= 1 && nx <= N && ny >= 1 && ny <= M && arr[nx][ny]) {
+                count += DFS(nx, ny, arr);
             }
         }
 
-        return cnt[0];
+        return count;
     }
 }
