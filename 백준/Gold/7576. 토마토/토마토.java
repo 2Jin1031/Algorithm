@@ -24,21 +24,12 @@ public class Main {
 
         bfs(ripeTomatoes);
 
-
-        int max = 0;
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < M; j++) {
-                if (map[i][j] == 0) {
-                    bw.write("-1");
-                    br.close();
-                    bw.close();
-                    return;
-                }
-                max = Math.max(max, map[i][j]);
-            }
+        int maxDays = calculateMaxDays();
+        if (maxDays == -1) {
+            bw.write("-1\n");
+        } else {
+            bw.write(String.valueOf(maxDays - 1) + "\n");
         }
-
-        bw.write(String.valueOf(max - 1));
 
         br.close();
         bw.close();
@@ -72,7 +63,6 @@ public class Main {
 
         while (!queue.isEmpty()) {
             int[] current = queue.poll();
-
             exploreNeighbors(current, queue);
         }
     }
@@ -96,9 +86,22 @@ public class Main {
     }
 
     private static void initBfsStart(Queue<int[]> queue, ArrayList<int[]> ripeTomatoes) {
-        for (int i = 0; i < ripeTomatoes.size(); i++) {
-            queue.add(ripeTomatoes.get(i));
-            visited[ripeTomatoes.get(i)[0]][ripeTomatoes.get(i)[1]] = true;
+        for (int [] tomato : ripeTomatoes) {
+            queue.add(tomato);
+            visited[tomato[0]][tomato[1]] = true;
         }
+    }
+
+    private static int calculateMaxDays() {
+        int max = 0;
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < M; j++) {
+                if (map[i][j] == 0) {
+                    return -1;
+                }
+                max = Math.max(max, map[i][j]);
+            }
+        }
+        return max;
     }
 }
