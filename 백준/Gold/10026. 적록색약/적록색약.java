@@ -18,17 +18,17 @@ public class Main {
 
         initialize(br);
 
-        int normalZones = 0;
-        int redGreenZones = 0;
+        int normalZones = countZones(true);
+        int redGreenZones = countZones(false);
 
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
                 if (!visitedNormal[i][j]) {
-                    bfs(new int[]{i, j}, true);
+                    bfs(i, j, true);
                     normalZones++;
                 }
                 if (!visitedRedGreen[i][j]) {
-                    bfs(new int[]{i, j}, false);
+                    bfs(i, j, false);
                     redGreenZones++;
                 }
             }
@@ -52,18 +52,37 @@ public class Main {
         visitedRedGreen = new boolean[N][N];
     }
 
-    private static void bfs(int[] start, boolean isNormal) {
+    private static int countZones(boolean isNormal) {
+        int zoneCount = 0;
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                if (shouldExploreZone(i, j, isNormal)) {
+                    bfs(i, j, isNormal);
+                    zoneCount++;
+                }
+            }
+        }
+        return zoneCount;
+    }
+
+    private static boolean shouldExploreZone(int i, int j, boolean isNormal) {
+        return isNormal ? !visitedNormal[i][j] : !visitedRedGreen[i][j];
+    }
+
+    private static void bfs(int startX, int startY, boolean isNormal) {
         Queue<int[]> queue = new LinkedList<>();
-        queue.add(start.clone());
+        queue.add(new int[] {startX, startY});
+
+        markVisited(startX, startY, isNormal);
 
         if (isNormal) {
-            visitedNormal[start[0]][start[1]] = true;
+            visitedNormal[startX][startY] = true;
         }
         else {
-            visitedRedGreen[start[0]][start[1]] = true;
+            visitedRedGreen[startX][startY] = true;
         }
 
-        char color = map[start[0]][start[1]];
+        char color = map[startX][startY];
         while (!queue.isEmpty()) {
             int[] current = queue.poll();
             for (int i = 0; i < D_SIZE; i++) {
@@ -80,6 +99,15 @@ public class Main {
                     }
                 }
             }
+        }
+    }
+
+    private static void markVisited(int startX, int startY, boolean isNormal) {
+        if (isNormal) {
+            visitedNormal[startX][startY] = true;
+        }
+        else {
+            visitedRedGreen[startX][startY] = true;
         }
     }
 
