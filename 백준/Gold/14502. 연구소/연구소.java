@@ -6,7 +6,9 @@ public class Main {
     private static int[][] map;
     private static boolean[][] visited;
     private static final ArrayList<int[]> blankPositions = new ArrayList<>();
-    private static int countWall = 3;
+    private static final int countWall = 3;
+    private static int totalWallCount = countWall;
+
 
     private static final int[] DX = {-1, 1, 0, 0};
     private static final int[] DY = {0, 0, -1, 1};
@@ -17,38 +19,45 @@ public class Main {
 
         initialize(br);
 
-        int blankSize = blankPositions.size();
-        int minVirus = Integer.MAX_VALUE;
-        for (int i = 0; i < blankSize; i++) {
-            for (int j = 0; j < blankSize; j++) {
-                for (int k = 0; k < blankSize; k++) {
-                    if (i == j || j == k || i == k) {
-                        continue;
-                    }
-
-                    resetVisitedArray();
-
-                    int[] first = blankPositions.get(i);
-                    int[] second = blankPositions.get(j);
-                    int[] third = blankPositions.get(k);
-
-                    map[first[0]][first[1]] = 1;
-                    map[second[0]][second[1]] = 1;
-                    map[third[0]][third[1]] = 1;
-
-                    int countVirus = exploreBFS();
-                    minVirus = Math.min(minVirus, countVirus);
-
-                    map[first[0]][first[1]] = 0;
-                    map[second[0]][second[1]] = 0;
-                    map[third[0]][third[1]] = 0;
-                }
-            }
-        }
-        int maxSafeArea = N * M - minVirus - countWall;
+        int maxSafeArea = findMaxSafeArea();
         bw.write(maxSafeArea + "\n");
         br.close();
         bw.close();
+    }
+
+    private static int findMaxSafeArea() {
+        int blankSize = blankPositions.size();
+        int minVirusSpread = Integer.MAX_VALUE;
+        for (int i = 0; i < blankSize; i++) {
+            for (int j = i + 1; j < blankSize; j++) {
+                for (int k = j + 1; k < blankSize; k++) {
+                    placeWalls(i, j, k);
+                    minVirusSpread = Math.min(minVirusSpread, exploreBFS());
+                    removeWalls(i, j, k);
+                }
+            }
+        }
+        return N * M - minVirusSpread - totalWallCount;
+    }
+
+    private static void removeWalls(int i, int j, int k) {
+        breakWall(blankPositions.get(i));
+        breakWall(blankPositions.get(j));
+        breakWall(blankPositions.get(k));
+    }
+
+    private static void placeWalls(int i, int j, int k) {
+        setWall(blankPositions.get(i));
+        setWall(blankPositions.get(j));
+        setWall(blankPositions.get(k));
+    }
+
+    private static void breakWall(int[] first) {
+        map[first[0]][first[1]] = 0;
+    }
+
+    private static void setWall(int[] first) {
+        map[first[0]][first[1]] = 1;
     }
 
     private static void resetVisitedArray() {
@@ -69,7 +78,7 @@ public class Main {
                 map[i][j] = Integer.parseInt(st.nextToken());
                 if (map[i][j] == 1) {
                     visited[i][j] = true;
-                    countWall++;
+                    totalWallCount++;
                 }
                 if (map[i][j] == 0) {
                     blankPositions.add(new int[]{i, j});
@@ -79,15 +88,16 @@ public class Main {
     }
 
     private static int exploreBFS() {
-        int countVirus = 0;
+        resetVisitedArray();
+        int virusCount = 0;
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < M; j++) {
                 if (map[i][j] == 2 && !visited[i][j]) {
-                    countVirus += bfs(new int[] {i, j});
+                    virusCount += bfs(new int[]{i, j});
                 }
             }
         }
-        return countVirus;
+        return virusCount;
     }
 
     private static int bfs(int[] start) {
@@ -95,7 +105,7 @@ public class Main {
         queue.offer(start);
         visited[start[0]][start[1]] = true;
 
-        int countVirus = 1;
+        int virusCount = 1;
         while (!queue.isEmpty()) {
             int[] current = queue.poll();
             int x = current[0];
@@ -106,13 +116,13 @@ public class Main {
                 int nextY = y + DY[i];
 
                 if (isValidPosition(nextX, nextY) && !visited[nextX][nextY] && map[nextX][nextY] == 0) {
-                    queue.offer(new int[] {nextX, nextY});
-                    countVirus++;
+                    queue.offer(new int[]{nextX, nextY});
+                    virusCount++;
                     visited[nextX][nextY] = true;
                 }
             }
         }
-        return countVirus;
+        return virusCount;
     }
 
     private static boolean isValidPosition(int x, int y) {
