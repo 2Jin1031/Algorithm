@@ -13,7 +13,7 @@ public class Main {
 
         initialize(br);
 
-        bfs(bw);
+        bw.write(String.valueOf(bfs()));
 
         br.close();
         bw.close();
@@ -26,7 +26,7 @@ public class Main {
 
     }
 
-    private static void bfs(BufferedWriter bw) throws IOException {
+    private static int bfs() {
         Queue<Integer> queue = new LinkedList<>();
         queue.add(N);
         visited[N] = 1;
@@ -35,21 +35,27 @@ public class Main {
             int current = queue.poll();
 
             if (current == K) {
-                bw.write(String.valueOf(visited[current] - 1));
-                bw.close();
+                return visited[current] - 1;
             }
-            if (current * 2 <= 100000 && visited[current * 2] == 0) {
-                queue.add(current * 2);
-                visited[current * 2] = visited[current];
-            }
-            if (current -1 >= 0 && visited[current - 1] == 0) {
-                queue.add(current - 1);
-                visited[current - 1] = visited[current] + 1;
-            }
-            if (current + 1 <= 100000 && visited[current + 1] == 0) {
-                queue.add(current + 1);
-                visited[current + 1] = visited[current] + 1;
-            }
+            move(queue, current, current * 2, 0);
+            move(queue, current, current - 1, 1);
+            move(queue, current, current + 1, 1);
         }
+        return -1;
+    }
+
+    private static void move(Queue<Integer> queue, int currentPosition, int newPosition, int timeIncrease) {
+        if (isValidPosition(newPosition) && !isVisited(newPosition)) {
+            queue.add(newPosition);
+            visited[newPosition] = visited[currentPosition] + timeIncrease;
+        }
+    }
+
+    private static boolean isValidPosition(int position) {
+        return position >= 0 && position <= 100000;
+    }
+
+    private static boolean isVisited(int position) {
+        return visited[position] != 0;
     }
 }
