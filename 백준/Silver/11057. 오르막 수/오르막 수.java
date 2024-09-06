@@ -1,36 +1,31 @@
 import java.io.*;
+import java.util.*;
 
 public class Main {
-    private static int[][] dp;
+    private static int N;
+    private static long[][] arr;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
-        int N = Integer.parseInt(br.readLine());
-        dp = new int[N + 1][11];
-
-        // init dp[1]
-        int sum = 0;
-        for (int i = 0; i < 10; i ++) {
-            dp[1][i] = 10 - i;
-            sum += dp[1][i];
-        }
-        dp[1][10] = sum % 10007;
-
-        for (int i = 2; i < N + 1; i++) {
-            sum = dp[i - 1][10];
-            dp[i][0] = sum;
+        N = Integer.parseInt(br.readLine());
+        arr = new long [N][11];
+        Arrays.fill(arr[0], 1);
+        arr[0][10] = 10;
+        for (int i = 1; i < N; i++) {
+            arr[i][0] = arr[i - 1][10];
+            long sum = arr[i][0];
             for (int j = 1; j < 10; j++) {
-                dp[i][j] = (dp[i][j - 1] - dp[i - 1][j - 1] + 10007) % 10007;
-                sum = (sum + dp[i][j]) % 10007;
+                arr[i][j] = ((arr[i][j - 1] - arr[i - 1][j - 1]) % 10007 + 10007) % 10007;
+                sum += arr[i][j];
             }
-            dp[i][10] = sum;
+            arr[i][10] = sum % 10007;
         }
 
-        bw.write(dp[N][0] + "\n");
-        bw.close();
-        br.close();
-    }
+        bw.write(String.valueOf(arr[N - 1][10]));
 
+        br.close();
+        bw.close();
+    }
 }
