@@ -1,12 +1,9 @@
 import java.io.*;
 import java.util.*;
-import java.util.stream.DoubleStream;
 
 public class Main {
     private static int N, M, K;
-    private static int[][] arr;
-
-    private static int[][] load;
+    private static int[][] dp;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -17,50 +14,31 @@ public class Main {
         M = Integer.parseInt(st.nextToken());
         K = Integer.parseInt(st.nextToken());
 
-        arr = new int[N + 1][M + 1];
-        load = new int[N + 1][M + 1];
-        for (int i = 1; i < N + 1; i++) {
-            for (int j = 1; j < M + 1; j++) {
-                arr[i][j] = i * M + j;
-            }
+        dp = new int[N + 1][M + 1];
+
+        if (K == 0) {
+            bw.write(solve(1, 1, N, M) + "\n");
+        } else {
+            int Kx = (K - 1) / M + 1; 
+            int Ky = (K - 1) % M + 1; 
+            int result = solve(1, 1, Kx, Ky) * solve(Kx, Ky, N, M);
+            bw.write(result + "\n");
         }
-
-
-        int cnt1 = cntLoad(1, K);
-        int cnt2 = cntLoad(K, N * M);
-
-        bw.write(cnt1 * cnt2 + "\n");
 
         bw.close();
         br.close();
     }
 
-    private static int cntLoad(int startValue, int endValue) {
-        int startX = findX(startValue);
-        int startY = findY(startValue);
-
-        int endX = findX(endValue);
-        int endY = findY(endValue);
-
-        load[startX][startY] = 1;
-
+    private static int solve(int startX, int startY, int endX, int endY) {
         for (int i = startX; i <= endX; i++) {
             for (int j = startY; j <= endY; j++) {
-                if (i == startX && j == startY) {
-                    continue;
+                if (i == startX || j == startY) {
+                    dp[i][j] = 1;
+                } else {
+                    dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
                 }
-                load[i][j] = load[i - 1][j] + load[i][j - 1];
             }
         }
-        
-        return load[endX][endY];
-    }
-
-    private static int findX(int value) {
-        return value / M + (value % M == 0 ? 0 : 1);
-    }
-
-    private static int findY(int value) {
-        return value % M + (value % M == 0 ? M : 0);
+        return dp[endX][endY];
     }
 }
