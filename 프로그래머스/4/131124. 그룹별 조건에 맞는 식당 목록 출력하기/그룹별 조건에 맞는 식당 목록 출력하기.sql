@@ -7,4 +7,3 @@ WHERE p.MEMBER_ID = r.MEMBER_ID
                         ORDER BY COUNT(REVIEW_ID) DESC
                         LIMIT 1)
 ORDER BY REVIEW_DATE, REVIEW_TEXT;
-
