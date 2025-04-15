@@ -1,112 +1,99 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.PriorityQueue;
+import java.util.*;
 
-class Main {
+public class Main {
 
-    private static Character[] src;
+    private static final Character[] PATTERN = {'q', 'u', 'a', 'c', 'k'};
 
     public static void main(String[] args) throws IOException {
-
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
-        src = new Character[]{'q', 'u', 'a', 'c', 'k'};
-
         String input = br.readLine();
 
         List<Character> voice = new ArrayList<>();
-        for (int i = 0; i < input.length(); i++) {
-            voice.add(input.charAt(i));
+        for (char ch : input.toCharArray()) {
+            voice.add(ch);
         }
+
         boolean[] isUsed = new boolean[voice.size()];
+        PriorityQueue<Integer> duckEndTimes = new PriorityQueue<>();
 
-        PriorityQueue<Integer> pq = new PriorityQueue<>(); // idx부터 울음을 시작할 수 있는 준비된 덕들
+        List<Character> current = new ArrayList<>(voice);
+        int realIndex = 0;
 
-        List<Character> tmp = new ArrayList<>(voice);
-
-        int realIdx = 0;
-        int lastCanNewStartIdx = 0;
         while (true) {
             int firstIdx;
+            // 다음 사용되지 않은 'q' 찾기
             while (true) {
-                firstIdx = tmp.indexOf(src[0]);
-                if (firstIdx == -1) {
+                firstIdx = current.indexOf('q');
+                if (firstIdx == -1) break;
+
+                realIndex += firstIdx;
+                if (!isUsed[realIndex]) {
+                    current = current.subList(firstIdx, current.size());
                     break;
                 }
-                realIdx += firstIdx;
-                if (!isUsed[realIdx]) { // 만약 아직 사용 안한 거 찾았으면 나가기
-                    tmp = tmp.subList(firstIdx, tmp.size());
-                    break;
-                }
-                tmp = tmp.subList(firstIdx + 1, tmp.size()); // 사용 안한 값을 찾기 위해 계속 뒤로 가기
-                realIdx++;
-            }
-            if (firstIdx == -1) {
-                break;
+                current = current.subList(firstIdx + 1, current.size());
+                realIndex++;
             }
 
-            if (!pq.isEmpty() && pq.peek() <= realIdx) { // 소리를 낼 수 있는 오리가 존재하면
-                pq.poll(); // 사용중 표시를 한다
+            if (firstIdx == -1) break;
+
+            // 사용 가능한 오리 있으면 꺼내기
+            if (!duckEndTimes.isEmpty() && duckEndTimes.peek() <= realIndex) {
+                duckEndTimes.poll();
             }
 
-
-            int canNewStartIdx = findVoiceBlock(realIdx, tmp, isUsed);
-            if (canNewStartIdx == -1) {
+            int endIdx = findQuack(realIndex, current, isUsed);
+            if (endIdx == -1) {
                 System.out.println("-1");
                 return;
-            } else {
-                lastCanNewStartIdx = canNewStartIdx;
-                pq.add(canNewStartIdx);
             }
+
+            duckEndTimes.add(endIdx);
         }
 
-        if (pq.size() == 1 && pq.peek() == -1) {
-            System.out.println("-1");
-        } else {
-
-            List<Boolean> list = new ArrayList<>();
-            for (boolean b : isUsed) {
-                list.add(b);
-            }
-            if (list.contains(Boolean.FALSE)) {
+        // 사용 안 된 문자가 있으면 실패
+        for (boolean used : isUsed) {
+            if (!used) {
                 System.out.println("-1");
-            } else {
-                System.out.println(pq.size());
+                return;
             }
         }
+
+        System.out.println(duckEndTimes.size());
     }
 
-    private static int findVoiceBlock(int disapearAmount, List<Character> tmp, boolean[] isUsed) {
-        int[] idxDB = new int[5];
-        for (int i = 0; i < src.length; i++) {
-            int findIdx;
-            List<Character> ttmp = new ArrayList<>(tmp);
-            int localDisappearAmount = disapearAmount;
+    private static int findQuack(int baseIdx, List<Character> list, boolean[] isUsed) {
+        int[] positions = new int[5];
+        int localBase = baseIdx;
+        List<Character> subList = new ArrayList<>(list);
+
+        for (int i = 0; i < PATTERN.length; i++) {
             while (true) {
-                findIdx = ttmp.indexOf(src[i]);
-                if (findIdx == -1) { // 못 찾았으면 울음소리 완성 불가 표시 반환
-                    return -1;
-                }
-                int realIdx = localDisappearAmount + findIdx;
-                if (!isUsed[realIdx]) { // 만약 아직 사용 안한 거 찾았으면 사용 표시 하고 나가기
+                int idx = subList.indexOf(PATTERN[i]);
+                if (idx == -1) return -1;
+
+                int realIdx = localBase + idx;
+                if (!isUsed[realIdx]) {
                     isUsed[realIdx] = true;
-                    idxDB[i] = realIdx;
+                    positions[i] = realIdx;
                     break;
                 }
-                ttmp = ttmp.subList(findIdx + 1, ttmp.size());
-                localDisappearAmount = realIdx + 1;
+
+                subList = subList.subList(idx + 1, subList.size());
+                localBase = realIdx + 1;
             }
         }
 
-        for (int i = 1; i < idxDB.length; i++) {
-            if (idxDB[i - 1] >= idxDB[i]) {
+        // 순서 확인
+        for (int i = 1; i < positions.length; i++) {
+            if (positions[i - 1] >= positions[i]) {
                 return -1;
             }
         }
 
-        return idxDB[4] + 1;
+        return positions[4] + 1; // 마지막 'k' 다음 인덱스
     }
 }
