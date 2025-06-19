@@ -23,10 +23,10 @@ public class Main {
             if (i == K) continue;
 
             if (arr[K][0] < arr[i][0]) ans++;
-            else if (arr[K][1] < arr[i][1]) ans++;
-            else if (arr[K][2] < arr[i][2]) ans++;
+            else if (arr[K][0] == arr[i][0] && arr[K][1] < arr[i][1]) ans++;
+            else if (arr[K][0] == arr[i][0] && arr[K][1] == arr[i][1] && arr[K][2] < arr[i][2]) ans++;
         }
 
-        System.out.println(ans);
+        System.out.println(ans + 1);
     }
 }
