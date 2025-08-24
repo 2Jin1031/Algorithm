@@ -20,7 +20,6 @@ public class Main {
         boolean[][] visited = new boolean[N][M];
 
         int[] startPosition = new int[2];
-        int maxPeopleCount = 0;
         for (int i = 0; i < N; i++) {
             String input = br.readLine();
             for (int j = 0; j < M; j++) {
@@ -33,13 +32,11 @@ public class Main {
                     startPosition[0] = i;
                     startPosition[1] = j;
                     continue;
-                } else if (arr[i][j] == 'P') {
-                    maxPeopleCount++;
                 }
             }
         }
 
-        int ans = BFS(arr, visited, startPosition, maxPeopleCount);
+        int ans = BFS(arr, visited, startPosition);
         if (ans == 0) {
             bw.write("TT");
         } else {
@@ -50,13 +47,13 @@ public class Main {
         bw.close();
     }
 
-    private static int BFS(char[][] arr, boolean[][] visited, int[] startPosition, int maxPeopleCount) {
+    private static int BFS(char[][] arr, boolean[][] visited, int[] startPosition) {
         Queue<int[]> queue = new ArrayDeque<>();
         queue.offer(startPosition);
         visited[startPosition[0]][startPosition[1]] = true;
 
         int peopleCount = 0;
-        while (!queue.isEmpty() && peopleCount < maxPeopleCount) {
+        while (!queue.isEmpty()) {
             int[] current = queue.poll();
             int currentX = current[0];
             int currentY = current[1];
@@ -68,9 +65,8 @@ public class Main {
                 if (isValidCoordinate(nextX, nextY) && !visited[nextX][nextY]) {
                     queue.offer(new int[]{nextX, nextY});
                     visited[nextX][nextY] = true;
-                    if (arr[nextX][nextY] == 'P') {
-                        peopleCount++;
-                    }
+
+                    if (arr[nextX][nextY] == 'P') peopleCount++;
                 }
             }
         }
