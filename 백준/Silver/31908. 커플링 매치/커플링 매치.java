@@ -18,7 +18,7 @@ public class Main {
             String key = st.nextToken();
 
             List<String> names = map.getOrDefault(key, new ArrayList<>());
-            if (names.size() > 1 && !key.equals("-")) {
+            if (names.size() == 2 && !key.equals("-")) {
                 count--;
             } else if (names.size() == 1 && !key.equals("-")) {
                 count++;   
