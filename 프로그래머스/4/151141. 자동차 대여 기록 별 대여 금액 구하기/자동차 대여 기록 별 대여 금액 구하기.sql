@@ -1,0 +1,24 @@
+-- null이 잘 감지 될까
+SELECT h.HISTORY_ID, 
+        CASE 
+        WHEN DATEDIFF(END_DATE, START_DATE) + 1 < 7 
+            THEN FLOOR(c.DAILY_FEE * (DATEDIFF(END_DATE, START_DATE) + 1)) 
+        ELSE 
+                 FLOOR(c.DAILY_FEE * (100 - p.DISCOUNT_RATE) / 100 * (DATEDIFF(END_DATE, START_DATE) + 1)) 
+        END AS FEE
+FROM CAR_RENTAL_COMPANY_CAR c 
+        JOIN CAR_RENTAL_COMPANY_RENTAL_HISTORY h 
+        ON c.CAR_ID = h.CAR_ID 
+        JOIN CAR_RENTAL_COMPANY_DISCOUNT_PLAN p 
+        ON c.CAR_TYPE = p.CAR_TYPE 
+        AND p.DURATION_TYPE LIKE (
+            CASE 
+            WHEN DATEDIFF(END_DATE, START_DATE) + 1 >= 7 AND DATEDIFF(END_DATE, START_DATE) + 1 < 30 
+                THEN '7일 이상'
+            WHEN DATEDIFF(END_DATE, START_DATE) + 1 >= 30 AND DATEDIFF(END_DATE, START_DATE) + 1 < 90 
+                THEN '30일 이상' 
+            WHEN DATEDIFF(END_DATE, START_DATE) + 1 >= 90 
+                THEN '90일 이상' 
+            END)
+WHERE c.CAR_TYPE = '트럭'
+ORDER BY FEE DESC, HISTORY_ID DESC;
