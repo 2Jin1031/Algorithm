@@ -1,29 +1,33 @@
 import java.util.*;
 
 class Solution {
-    int answer;
-    boolean[] visited;
-    int[][] dungeons;
-
     public int solution(int k, int[][] dungeons) {
-        this.dungeons = dungeons;
-        this.visited = new boolean[dungeons.length];
-        this.answer = 0;
+        // (최소 필요 - 소모)가 큰 순서로 정렬
+        Arrays.sort(dungeons, (a, b) -> (b[0] - b[1]) - (a[0] - a[1]));
 
-        re(0, k);
-        return answer;
-    }
+        // dp[j] = 남은 피로도가 j일 때 최대 던전 수 (-1은 도달 불가)
+        int[] dp = new int[k + 1];
+        Arrays.fill(dp, -1);
+        dp[k] = 0;
 
-    public void re(int count, int localK) {
-        answer = Math.max(answer, count);
+        for (int[] d : dungeons) {
+            int need = d[0];
+            int cost = d[1];
 
-        for (int i = 0; i < dungeons.length; i++) {
-            if (visited[i]) continue;
-            if (localK < dungeons[i][0]) continue;  // 최소 필요 피로도 미달
+            // j가 작은 쪽부터: 쓰는 칸(j - cost)이 이미 지나온 칸이라 같은 던전 두 번 안 씀
+            for (int j = need; j < k + 1; j++) {
+                if (dp[j] < 0) {
+                    continue;
+                }
 
-            visited[i] = true;
-            re(count + 1, localK - dungeons[i][1]);
-            visited[i] = false;
+                dp[j - cost] = Math.max(dp[j - cost], dp[j] + 1);
+            }
         }
+
+        int answer = 0;
+        for (int j = 0; j < k + 1; j++) {
+            answer = Math.max(answer, dp[j]);
+        }
+        return answer;
     }
 }
